@@ -120,9 +120,9 @@ INSERT INTO countries (country_name, region_id) VALUES
 -- 6 row(s) returned
 SELECT * FROM countries;
 
--- END OF COUNTRIES EXERCISE ---
+-- END OF COUNTRIES TABLE ---
 
--- JOBS EXERCISE --
+-- START OF JOBS TABLE --
 
 -- creating table jobs, salary cannot exceed 25000
 CREATE TABLE jobs (
@@ -152,4 +152,15 @@ SELECT * FROM jobs;
 INSERT INTO jobs (job_title, min_salary, max_salary) VALUES
 ('Software Engineer', 35000, 50000);
 
+-- END OF JOBS TABLE --
+
+-- START OF JOB HISTORY TABLE --
+
+-- end date is not null as people may still be working for the company
+CREATE TABLE job_history (
+employee_id int NOT NULL AUTO_INCREMENT KEY,
+start_date DATE NOT NULL, 
+end_date DATE, 
+job_id
+)
 
