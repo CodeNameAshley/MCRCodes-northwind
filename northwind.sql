@@ -158,9 +158,35 @@ INSERT INTO jobs (job_title, min_salary, max_salary) VALUES
 
 -- end date is not null as people may still be working for the company
 CREATE TABLE job_history (
-employee_id int NOT NULL AUTO_INCREMENT KEY,
+employee_id INT NOT NULL AUTO_INCREMENT KEY,
 start_date DATE NOT NULL, 
 end_date DATE, 
-job_id
-)
+job_id INT NOT NULL, 
+department_id INT NOT NULL
+);
 
+-- checking if job_history table exists
+SELECT * FROM job_history;
+
+-- END OF JOB HISTORY TABLE --
+
+-- INSERT EXERCISES --
+
+-- recreating following table in database
+CREATE TABLE countries2 (
+COUNTRY_ID varchar(2),
+COUNTRY_NAME varchar(40),
+REGION_ID decimal(10,0)
+);
+
+-- insert a record with own balue into the table against each column
+INSERT INTO countries2 (country_id, country_name, region_id) VALUES
+(13, 'Spain', 13.0 );
+
+-- statement to insert 3 rows by a single insert statement
+INSERT INTO countries2 (country_id, country_name, region_id) VALUES
+(10, 'Italy', 10.0 ),
+(11, 'India', 11.0),
+(12, 'China', 12.0);
+
+SELECT * FROM countries2;
