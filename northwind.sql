@@ -43,7 +43,7 @@ CHECK (country_name = 'Italy' OR 'India' OR 'China')
 );
 
 -- checking if country_name constraint works
--- Error Code: 3819 (Check constrains countries check 1 is violated)
+-- Error Code: 3819 (Check constraint countries check 1 is violated)
 INSERT INTO countries (country_id, country_name, region_id) VALUES
 (001, 'Australia', 1 );
 
@@ -77,7 +77,7 @@ INSERT INTO countries (country_id, country_name, region_id) VALUES
 -- 3 row(s) returned
 SELECT * FROM countries;
 
--- inserting duplicate country_id date for error
+-- inserting duplicate country_id value for error
 -- error code: 1062 (duplicate entry 1 for key country_id)
 INSERT INTO countries (country_id, country_name, region_id) VALUES
 (001, 'Japan', 4);
@@ -85,8 +85,20 @@ INSERT INTO countries (country_id, country_name, region_id) VALUES
 -- DELETING and RECREATING table
 DROP TABLE countries;
 
+-- Adding key in country_id
+CREATE TABLE countries (
+country_id INT NOT NULL UNIQUE KEY,
+country_name VARCHAR(100) NOT NULL,
+region_id INT NOT NULL,
+PRIMARY KEY (country_id)
+);
+
+-- DELETING and RECREATING table
+DROP TABLE countries;
+
 -- Making country_id a PRIMARY KEY field, preventing duplicate data
 -- AUTO INCREMENT ensures unique data is automatically inserted 
+-- KEY dropped for PK
 -- lessens human error
 CREATE TABLE countries (
 country_id INT NOT NULL AUTO_INCREMENT,
@@ -105,9 +117,39 @@ INSERT INTO countries (country_name, region_id) VALUES
 ('Spain', 6);
 
 -- checking auto increment works, table should show all 3 columns
--- 6 row(s) returnes
+-- 6 row(s) returned
 SELECT * FROM countries;
 
+-- END OF COUNTRIES EXERCISE ---
 
+-- JOBS EXERCISE --
+
+-- creating table jobs, salary cannot exceed 25000
+CREATE TABLE jobs (
+job_id INT NOT NULL AUTO_INCREMENT KEY, 
+job_title VARCHAR(250) NOT NULL, 
+min_salary INT NOT NULL, 
+max_salary INT NOT NULL,
+CHECK (max_salary <= 25000 )
+);
+
+-- checking if jobs table exist
+-- 0 row(s) returned
+SELECT * FROM jobs;
+
+-- inserting values into jobs where salary is below or equal 25000, job_id auto increments
+-- 2 row(s) affected duplicates:0 warnings: 0
+INSERT INTO jobs (job_title, min_salary, max_salary) VALUES
+('Admin', 20000, 25000),
+('Trainee', 19000, 23000);
+
+-- checking auto increment works, and constraint of <= 25000 works
+-- 2 row(s) returned 
+SELECT * FROM jobs;
+
+-- inserting value into jobs where salary value violates constraint
+-- Error code: 3819. check constraint jobs check 1 is violated.
+INSERT INTO jobs (job_title, min_salary, max_salary) VALUES
+('Software Engineer', 35000, 50000);
 
 
