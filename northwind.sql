@@ -198,18 +198,229 @@ SELECT * FROM countries2;
 -- START OF SELECT EXERCISES -- 
 
 -- Reading data from products table
-
+-- 45 row(s) returned
 SELECT * FROM products;
 
+-- query to get product name and quantity per unit
+-- 45 row(s) returned
+SELECT product_name, quantity_per_unit FROM products;
+
+-- query to get a list of currently available products
+-- 40 row(s) returned
+SELECT id, product_name FROM products WHERE discontinued = 0 ORDER BY ID ASC;
+
+-- query to get a list of discontinued products
+-- 5 row(s) returned
+SELECT id, product_name FROM products WHERE discontinued = 1 ORDER BY id DESC;
+
+-- write a query to get the name and price of the most expensive product
+-- this will show the most expensive product at the top
+SELECT product_name, list_price, standard_cost FROM products ORDER BY list_price DESC; 
+
+-- write a query to get the name and price of the least expensive product
+-- this will list the least expensive product at the top
+SELECT product_name, list_price, standard_cost FROM products ORDER BY list_price ASC; 
+
+-- get a list of products that cost less than $20
+-- 32 row(s) returned
+SELECT product_name FROM products WHERE list_price <= 20;
+
+-- get a list of products that cost between $15 and $25
+-- 10 row(s) returned
+SELECT product_name FROM products WHERE list_price BETWEEN 15 AND 25;
+
+-- get a list of the ten most expensive products
+-- using limit to only show 10 rows
+SELECT product_name, list_price, standard_cost FROM products ORDER BY list_price DESC LIMIT 10;
+
+-- count of all the current products
+-- 40
+SELECT COUNT(product_name) FROM products WHERE discontinued = 0;
+
+-- count of all the discontinued products
+-- 5
+SELECT COUNT(product_name) FROM products WHERE discontinued = 1;
+
+-- END OF SELECT EXERCISES --
 
 
+-- START OF UPDATE EXERCISES --
+
+SELECT * FROM employees;
+
+-- statement to change the email of every employee to 'not available'
+-- 9 row(s) affected
+UPDATE employees SET email_address = 'Not Available';
+
+-- write a statement to change email to 'classified' and first_name to dave
+-- 9 row(s) affected
+UPDATE employees SET email_address = 'Not Available', first_name = 'Dave';
+
+-- changing email to 'super top secret' and last_name to McSalesman 
+-- for employees who's job_title is Sales Representative
+-- 6 row(s) affected
+UPDATE employees SET email_address = 'Super Top Secret', last_name = 'McSalesman' WHERE job_title = 'Sales Representative';
+
+-- statement to change the webpage of all the employees in Seattle to the Wiki page for seattle
+-- 4 row(s) affected
+UPDATE employees SET web_page = 'https://en.wikipedia.org/wiki/Seattle' WHERE city = 'Seattle';
+
+SELECT * FROM customers;
+
+-- Change Roland Wacker's last name to Andersen
+-- 1 row(s) affected - 1 changed
+UPDATE customers SET last_name = 'Andersen' WHERE first_name = 'Roland' AND last_name = 'Wacker';
+
+-- Checking if update went through, Wacker should not appear
+-- 0 row(s) returned
+SELECT first_name, last_name FROM customers WHERE last_name = 'Wacker';
+
+-- Checking is spelling is correct
+-- 2 row(s) returned
+SELECT first_name, last_name FROM customers WHERE last_name = 'Andersen';
+
+SELECT * FROM order_details_status;
+SELECT * FROM orders;
+
+-- using inner join to see the status of all orders
+-- this matches the status_ID from orders and id from order_details_status
+SELECT * FROM order_details_status od INNER JOIN orders o on od.id = o.status_id;
+
+-- finding how many unshipped orders Roland Wacker has
+-- 1 row(s) returned
+SELECT * FROM orders WHERE shipper_id = 2 AND ship_name = 'Roland Wacker';
+
+-- finding out what Elizabeth's address is 
+SELECT * FROM orders WHERE ship_name = 'Elizabeth Andersen';
+
+-- changing ship_name and ship_address on any orders that have not yet shipped to Roland
+-- the ship name should reflect Roland's new last_name, and match Elizabeth's new address
+-- 1 row(s) affected
+UPDATE orders SET ship_name = 'Roland Andersen', ship_address = '123 8th Street', ship_city = 'Portland', ship_state_province = 'OR' WHERE status_id = 2;
+
+-- checking if details for Roland Wacker has changed
+-- 1 row(s) returned
+SELECT * FROM orders WHERE ship_name = 'Roland Andersen';
+
+-- checking other entries are unaffected as they have either shipped or unapplicable
+-- 3 row(s) returned
+SELECT * FROM orders WHERE ship_name = 'Roland Wacker';
+
+-- END OF UPDATE EXERCISES --
 
 
+-- START OF DELETE EXERCISES --
+
+-- Seeing the orders ID ordered by lowest number first which is 30
+SELECT * FROM orders ORDER BY id ASC;
+
+-- checking for PK's DOESNT WORK?!
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    CONSTRAINT_NAME,
+    REFERENCED_TABLE_NAME,
+    REFERENCED_COLUMN_NAME
+FROM
+    INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+	REFERENCED_TABLE_SCHEMA = 'db_name'
+    AND REFERENCED_TABLE_NAME = 'table_name';
+
+-- attempting to delete order id 30
+-- cannot delete or update a parent row: a foreign key constraint fails 
+-- ('northwind'.'invoices', CONSTRAINT 'fk_invoices_orders1' FOREIGN KEY ('order_id') REFERENCES 'orders'('id'))
+DELETE FROM orders WHERE id = 30;
+
+-- *** WARNING DANGEROUS SQL STATEMENTS** --
+-- dropping constraint id PK from orders
+-- 48 rows affected
+ALTER TABLE orders DROP PRIMARY KEY,
+DROP FOREIGN KEY 
+fk_orders_customers;
+
+-- 0 rows affected
+ALTER TABLE orders
+DROP FOREIGN KEY 
+fk_orders_employees1;
+
+-- 0 rows affected
+ALTER TABLE orders
+DROP FOREIGN KEY 
+fk_orders_orders_status1;
+
+-- 0 rows affected
+ALTER TABLE orders
+DROP FOREIGN KEY 
+fk_orders_orders_tax_status1;
+
+ALTER TABLE orders
+DROP FOREIGN KEY 
+fk_orders_shippers1;
+
+-- dropping multiple constraints
+SELECT concat('ALTER TABLE ', TABLE_NAME, ' DROP FOREIGN KEY ', CONSTRAINT_NAME, ';') 
+FROM information_schema.key_column_usage 
+WHERE CONSTRAINT_SCHEMA = 'db_name' 
+AND referenced_table_name IS NOT NULL;
+
+-- WHEN SCHEMA IS REFRESHED FK IS EMPTY
+-- EER diagram shows orders table does not contain PK and FK
+-- ***END OF DANGEROUS MOVES*** --
+
+-- TO DISABLE FOREIGN KEY CHECKS --
+-- disabling FK checks
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- running the statement below should delete order id 30
+-- 1 row affected
+DELETE FROM orders WHERE id = 30;
+
+-- delete any orders that are shipping to New York
+DELETE FROM orders WHERE ship_city = 'New York';
+
+-- delete any discontinued products from the product table
+-- need to see column name
+SELECT * FROM products;
+
+-- deleting discontinued products
+-- 5 row(s) affected
+DELETE FROM products WHERE discontinued = 1;
+
+-- select a customer, delete them, any orders they have made, 
+-- and any related date in the order_details table
+
+-- finding a random customer
+-- chose a Karen
+SELECT * FROM customers;
+SELECT * FROM order_details;
+
+-- finding more info by JOIN
+SELECT * FROM customers c LEFT JOIN order_details od on od.id = c.id ORDER BY c.first_name;
+
+-- finding Karen in orders table
+SELECT * FROM orders WHERE customer_id = 27;
+
+-- deleting orders made by Karen
+-- 1 row affected
+DELETE FROM orders WHERE customer_id = 27;
+
+-- checking 27 is definitely Karen in order_details
+SELECT * FROM order_details WHERE purchase_order_id = 96;
+
+-- deleting Karen's order details
+DELETE FROM order_details WHERE id = 27;
+DELETE FROM order_details WHERE purchase_order_id = 96;
+
+-- ***WARNING DELETING (DROP) WHOLE TABLE AND DATABASE!!*** --
+
+-- dropping whole employees table
+-- could use truncate to drop data inside table, but table will still exists
+DROP TABLE employees;
+
+-- dropping whole database
+-- dropping DB will result in complete loss of all data stored!
+DROP DATABASE northwind; 
 
 
-
-
-
-
-
-
+-- END OF SQL & MYSQL EXERCISES --
