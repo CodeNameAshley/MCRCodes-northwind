@@ -170,6 +170,7 @@ SELECT * FROM job_history;
 
 -- END OF JOB HISTORY TABLE --
 
+
 -- INSERT EXERCISES --
 
 -- recreating following table in database
@@ -190,3 +191,25 @@ INSERT INTO countries2 (country_id, country_name, region_id) VALUES
 (12, 'China', 12.0);
 
 SELECT * FROM countries2;
+
+-- END OF INSERT EXERCISES --
+
+
+-- START OF SELECT EXERCISES -- 
+
+-- Reading data from products table
+
+SELECT * FROM products;
+
+
+
+
+
+
+
+
+
+
+
+
+
